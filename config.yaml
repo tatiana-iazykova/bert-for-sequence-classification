@@ -1,6 +1,7 @@
 #model
 transformer_model:
   model: "cointegrated/rubert-tiny"
+  path_to_state_dict:
   device: cpu
   dropout: 0.2
   tiny_bert: true
@@ -8,8 +9,6 @@ transformer_model:
   batch_size: 8
   shuffle: true
   maxlen: 512
-  num_epocs: 30
-  average_f1: macro
 
 # data
 data:
@@ -19,3 +18,9 @@ data:
   target_column: target
   random_state: 42
   test_size: 0.3
+
+# training
+training:
+  num_epocs: 30
+  average_f1: macro
+  output_dir: results/

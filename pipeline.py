@@ -1,3 +1,5 @@
+import os
+
 from src.utils import train, evaluate, predict_metrics
 from src.pandas_dataset.PandasDataset import PandasDataset
 from src.dataset import Dataset
@@ -109,7 +111,7 @@ def train_evaluate(
     :param optimizer: optimizer from torch optimizers
     :return: fine-tuned model
     """
-    for i in range(config['transformer_model']['num_epocs']):
+    for i in range(config['training']['num_epocs']):
 
         print(f'==== Epoch {i+1} ====')
         tr = train(
@@ -117,14 +119,14 @@ def train_evaluate(
             iterator=training_generator,
             optimizer=optimizer,
             criterion=criterion,
-            average=config['transformer_model']['average_f1']
+            average=config['training']['average_f1']
         )
 
         evl = evaluate(
             model=model,
             iterator=valid_generator,
             criterion=criterion,
-            average=config['transformer_model']['average_f1']
+            average=config['training']['average_f1']
         )
 
         print(f'Train F1: {tr}\nEval F1: {evl}')
@@ -137,6 +139,8 @@ def train_evaluate(
 
 def main():
     config = load_config("config.yaml")
+
+    os.makedirs(config['training']['output_dir'], exist_ok=True)
 
     device = torch.device(config['transformer_model']['device'])
     tokenizer = AutoTokenizer.from_pretrained(
@@ -155,6 +159,12 @@ def main():
         dropout=config['transformer_model']['dropout'],
         tiny=config['transformer_model']['tiny_bert']
     )
+
+    if not config['transformer_model']["path_to_state_dict"]:
+        model.load_state_dict(
+            torch.load(config['transformer_model']["path_to_state_dict"], map_location=device),
+            strict=False
+        )
 
     optimizer = optim.Adam(model.parameters(), lr=float(config['transformer_model']['learning_rate']))
     criterion = nn.NLLLoss()
@@ -176,8 +186,8 @@ def main():
         criterion=criterion,
         optimizer=optimizer
     )
-    torch.save(model.state_dict(), "model")
-    with open('label_mapper.json', mode='w', encoding='utf-8') as f:
+    torch.save(model.state_dict(), os.path.join(config['training']['output_dir'], "model"))
+    with open(os.path.join(config['training']['output_dir'], 'label_mapper.json'), mode='w', encoding='utf-8') as f:
         json.dump(model.mapper, f, indent=4, ensure_ascii=False)
 
 
