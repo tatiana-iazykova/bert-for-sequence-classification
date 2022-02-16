@@ -1,0 +1,21 @@
+#model
+transformer_model:
+  model: "cointegrated/rubert-tiny"
+  device: cpu
+  dropout: 0.2
+  tiny_bert: true
+  learning_rate: 1e-6
+  batch_size: 8
+  shuffle: true
+  maxlen: 512
+  num_epocs: 30
+  average_f1: macro
+
+# data
+data:
+  train_data_path: gvk_dnie_one_list.xlsx
+  test_data_path:
+  text_column: Комментарий
+  target_column: target
+  random_state: 42
+  test_size: 0.3
