@@ -24,7 +24,7 @@ def predict_metrics(
 
     model.eval()
     with torch.no_grad():
-        for texts, ys in iterator:
+        for texts, ys in tqdm(iterator, total=len(iterator), desc="Computing final metrics..."):
             predictions = model(texts.to(device)).squeeze()
             preds = predictions.detach().to('cpu').numpy().argmax(1).tolist()
             y_true = ys.tolist()
