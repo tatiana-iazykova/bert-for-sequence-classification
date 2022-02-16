@@ -1,7 +1,7 @@
 #model
 transformer_model:
   model: "cointegrated/rubert-tiny"
-  path_to_state_dict:
+  path_to_state_dict: false
   device: cpu
   dropout: 0.2
   tiny_bert: true
@@ -17,10 +17,10 @@ data:
   text_column: Комментарий
   target_column: target
   random_state: 42
-  test_size: 0.3
+  test_size: 0.9
 
 # training
 training:
-  num_epocs: 30
+  num_epocs: 1
   average_f1: macro
   output_dir: results/

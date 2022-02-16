@@ -132,7 +132,6 @@ def train_evaluate(
         print(f'Train F1: {tr}\nEval F1: {evl}')
 
     print()
-    print('Final metrics')
     predict_metrics(model, valid_generator)
     return model
 
@@ -160,7 +159,7 @@ def main():
         tiny=config['transformer_model']['tiny_bert']
     )
 
-    if not config['transformer_model']["path_to_state_dict"]:
+    if config['transformer_model']["path_to_state_dict"]:
         model.load_state_dict(
             torch.load(config['transformer_model']["path_to_state_dict"], map_location=device),
             strict=False
