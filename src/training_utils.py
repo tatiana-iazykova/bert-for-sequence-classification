@@ -137,6 +137,7 @@ def train_evaluate(
             iterator=training_generator,
             optimizer=optimizer,
             criterion=criterion,
+            device=config['training']['device'],
             average=config['training']['average_f1']
         )
 
