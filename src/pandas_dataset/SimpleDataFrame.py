@@ -26,7 +26,6 @@ class SimpleDataFrame:
                 test_size=test_size
             )
 
-
     def __train_test_split(self, random_state: int, target_label: str, test_size: float):
         self.train, self.test = train_test_split(self.train,
                                                  test_size=test_size,
