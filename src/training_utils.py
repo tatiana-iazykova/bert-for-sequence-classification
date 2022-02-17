@@ -144,11 +144,16 @@ def train_evaluate(
             model=model,
             iterator=valid_generator,
             criterion=criterion,
+            device=config['training']['device'],
             average=config['training']['average_f1']
         )
 
         print(f'Train F1: {tr}\nEval F1: {evl}')
 
     print()
-    predict_metrics(model, valid_generator)
+    predict_metrics(
+        model=model,
+        iterator=valid_generator,
+        device=config['training']['device']
+    )
     return model

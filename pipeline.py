@@ -34,6 +34,8 @@ def main():
         tiny=config['transformer_model']['tiny_bert']
     )
 
+    model = model.to(device)
+
     if config['transformer_model']["path_to_state_dict"]:
         model.load_state_dict(
             torch.load(config['transformer_model']["path_to_state_dict"], map_location=device),
