@@ -13,7 +13,8 @@ class BertCLF(nn.Module):
             tokenizer: PreTrainedTokenizerBase,
             id2label: Dict[int, str],
             dropout: float,
-            tiny: bool = True
+            tiny: bool = True,
+            device: str = torch.device
     ):
         super().__init__()
         self.tokenizer = tokenizer
@@ -21,6 +22,8 @@ class BertCLF(nn.Module):
         self.drop = nn.Dropout(dropout)
         self.act = nn.LogSoftmax(1)
         self.mapper = id2label
+        self.device = device
+
         out_bert = 768
         if tiny:
             out_bert = 312

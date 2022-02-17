@@ -31,7 +31,8 @@ def main():
         tokenizer=tokenizer,
         id2label=id2label,
         dropout=config['transformer_model']['dropout'],
-        tiny=config['transformer_model']['tiny_bert']
+        tiny=config['transformer_model']['tiny_bert'],
+        device=device
     )
 
     model = model.to(device)
@@ -61,7 +62,6 @@ def main():
         criterion=criterion,
         optimizer=optimizer,
         num_epocs=config['training']['num_epochs'],
-        device=config['transformer_model']['device'],
         average=config['training']['average_f1']
     )
 
