@@ -109,7 +109,7 @@ def train_evaluate(
         valid_generator: torch.utils.data.DataLoader,
         criterion: torch.optim,
         optimizer: torch.nn,
-        num_epocs: int,
+        num_epochs: int,
         average: str
 ):
     """
@@ -125,9 +125,9 @@ def train_evaluate(
 
     :return: fine-tuned model
     """
-    for i in range(num_epocs):
+    for i in range(num_epochs):
 
-        print(f"==== Epoch {i+1} out of {num_epocs} ====")
+        print(f"==== Epoch {i+1} out of {num_epochs} ====")
         tr = train(
             model=model,
             iterator=training_generator,

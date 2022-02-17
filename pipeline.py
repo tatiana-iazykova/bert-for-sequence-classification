@@ -61,7 +61,7 @@ def main():
         valid_generator=valid_generator,
         criterion=criterion,
         optimizer=optimizer,
-        num_epocs=config['training']['num_epochs'],
+        num_epochs=config['training']['num_epochs'],
         average=config['training']['average_f1']
     )
 

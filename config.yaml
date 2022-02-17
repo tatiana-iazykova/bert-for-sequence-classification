@@ -21,6 +21,6 @@ data:
 
 # training
 training:
-  num_epocs: 1
+  num_epochs: 1
   average_f1: macro
-  output_dir: ./
+  output_dir: results/
