@@ -4,6 +4,7 @@ from src.BertCLF import BertCLF
 import numpy as np
 from sklearn.metrics import f1_score
 from tqdm import tqdm
+from typing import Dict, Any
 
 
 def predict_metrics(
@@ -109,3 +110,45 @@ def evaluate(
             epoch_f1.append(f1_score(y_true, preds, average=average))
 
     return np.mean(epoch_f1)
+
+def train_evaluate(
+        model: BertCLF,
+        config: Dict[str, Dict[str, Any]],
+        training_generator: torch.utils.data.DataLoader,
+        valid_generator: torch.utils.data.DataLoader,
+        criterion: torch.optim,
+        optimizer: torch.nn
+):
+    """
+    Training and evaluation process
+    :param model: architecture you want to fine-tune
+    :param config: config file with all the necessary information for training
+    :param training_generator: training data
+    :param valid_generator: evaluation data
+    :param criterion: loss from torch losses
+    :param optimizer: optimizer from torch optimizers
+    :return: fine-tuned model
+    """
+    for i in range(config['training']['num_epocs']):
+
+        print(f'==== Epoch {i+1} ====')
+        tr = train(
+            model=model,
+            iterator=training_generator,
+            optimizer=optimizer,
+            criterion=criterion,
+            average=config['training']['average_f1']
+        )
+
+        evl = evaluate(
+            model=model,
+            iterator=valid_generator,
+            criterion=criterion,
+            average=config['training']['average_f1']
+        )
+
+        print(f'Train F1: {tr}\nEval F1: {evl}')
+
+    print()
+    predict_metrics(model, valid_generator)
+    return model
