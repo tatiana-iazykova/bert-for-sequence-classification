@@ -12,15 +12,15 @@ transformer_model:
 
 # data
 data:
-  train_data_path: gvk_dnie_one_list.xlsx
+  train_data_path:
   test_data_path:
-  text_column: Комментарий
-  target_column: target
+  text_column:
+  target_column:
   random_state: 42
-  test_size: 0.9
+  test_size: 0.3
 
 # training
 training:
   num_epocs: 1
   average_f1: macro
-  output_dir: results/
+  output_dir: ./

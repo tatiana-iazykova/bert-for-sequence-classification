@@ -14,7 +14,7 @@ class BertCLF(nn.Module):
             id2label: Dict[int, str],
             dropout: float,
             tiny: bool = True,
-            device: str = torch.device
+            device: torch.device = torch.device('cpu')
     ):
         super().__init__()
         self.tokenizer = tokenizer
