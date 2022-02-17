@@ -137,7 +137,7 @@ def train_evaluate(
             iterator=training_generator,
             optimizer=optimizer,
             criterion=criterion,
-            device=config['training']['device'],
+            device=config['transformer_model']['device'],
             average=config['training']['average_f1']
         )
 
@@ -145,7 +145,7 @@ def train_evaluate(
             model=model,
             iterator=valid_generator,
             criterion=criterion,
-            device=config['training']['device'],
+            device=config['transformer_model']['device'],
             average=config['training']['average_f1']
         )
 
@@ -155,6 +155,6 @@ def train_evaluate(
     predict_metrics(
         model=model,
         iterator=valid_generator,
-        device=config['training']['device']
+        device=config['transformer_model']['device']
     )
     return model
