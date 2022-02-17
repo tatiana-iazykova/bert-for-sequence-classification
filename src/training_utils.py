@@ -162,6 +162,6 @@ def train_evaluate(
     predict_metrics(
         model=model,
         iterator=valid_generator,
-        device=config['transformer_model']['device']
+        device=device
     )
     return model
