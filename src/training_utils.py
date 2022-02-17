@@ -111,45 +111,52 @@ def evaluate(
 
     return np.mean(epoch_f1)
 
+
 def train_evaluate(
         model: BertCLF,
-        config: Dict[str, Dict[str, Any]],
         training_generator: torch.utils.data.DataLoader,
         valid_generator: torch.utils.data.DataLoader,
         criterion: torch.optim,
-        optimizer: torch.nn
+        optimizer: torch.nn,
+        num_epocs: int,
+        device: str,
+        average: str
 ):
     """
     Training and evaluation process
     :param model: architecture you want to fine-tune
-    :param config: config file with all the necessary information for training
     :param training_generator: training data
     :param valid_generator: evaluation data
     :param criterion: loss from torch losses
     :param optimizer: optimizer from torch optimizers
+    :param num_epocs: number of epochs,
+    :param device: device,
+    :param average: f1-averaging
+
     :return: fine-tuned model
     """
-    for i in range(config['training']['num_epocs']):
+    for i in range(num_epocs):
 
-        print(f'==== Epoch {i+1} ====')
+        print(f"==== Epoch {i+1} out of {num_epocs} ====")
         tr = train(
             model=model,
             iterator=training_generator,
             optimizer=optimizer,
             criterion=criterion,
-            device=config['transformer_model']['device'],
-            average=config['training']['average_f1']
+            device=device,
+            average=average
         )
 
         evl = evaluate(
             model=model,
             iterator=valid_generator,
             criterion=criterion,
-            device=config['transformer_model']['device'],
-            average=config['training']['average_f1']
+            device=device,
+            average=average
         )
 
         print(f'Train F1: {tr}\nEval F1: {evl}')
+        print()
 
     print()
     predict_metrics(

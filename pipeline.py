@@ -56,12 +56,15 @@ def main():
 
     model = train_evaluate(
         model=model,
-        config=config,
         training_generator=training_generator,
         valid_generator=valid_generator,
         criterion=criterion,
-        optimizer=optimizer
+        optimizer=optimizer,
+        num_epocs=config['training']['num_epochs'],
+        device=config['transformer_model']['device'],
+        average=config['training']['average_f1']
     )
+
     torch.save(model.state_dict(), os.path.join(config['training']['output_dir'], "model"))
     with open(os.path.join(config['training']['output_dir'], 'label_mapper.json'), mode='w', encoding='utf-8') as f:
         json.dump(model.mapper, f, indent=4, ensure_ascii=False)
