@@ -31,8 +31,11 @@ def main():
         tokenizer=tokenizer,
         id2label=id2label,
         dropout=config['transformer_model']['dropout'],
-        tiny=config['transformer_model']['tiny_bert']
+        tiny=config['transformer_model']['tiny_bert'],
+        device=device
     )
+
+    model = model.to(device)
 
     if config['transformer_model']["path_to_state_dict"]:
         model.load_state_dict(
@@ -54,12 +57,14 @@ def main():
 
     model = train_evaluate(
         model=model,
-        config=config,
         training_generator=training_generator,
         valid_generator=valid_generator,
         criterion=criterion,
-        optimizer=optimizer
+        optimizer=optimizer,
+        num_epocs=config['training']['num_epochs'],
+        average=config['training']['average_f1']
     )
+
     torch.save(model.state_dict(), os.path.join(config['training']['output_dir'], "model"))
     with open(os.path.join(config['training']['output_dir'], 'label_mapper.json'), mode='w', encoding='utf-8') as f:
         json.dump(model.mapper, f, indent=4, ensure_ascii=False)
