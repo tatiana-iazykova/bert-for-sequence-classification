@@ -1,10 +1,9 @@
 import torch
 from sklearn.metrics import classification_report
-from src.BertCLF import BertCLF
+from bert_clf.src.BertCLF import BertCLF
 import numpy as np
 from sklearn.metrics import f1_score
 from tqdm import tqdm
-from typing import Dict, Any
 
 
 def predict_metrics(
@@ -44,11 +43,11 @@ def train(
 ) -> float:
     """
     :param model: model architecture that you want to fine-tune
-    :param iterator: iterator with data reserved for training
+    :param iterator: iterator with data reserved for bert_clf
     :param optimizer: torch optimizer
     :param criterion: instance of torch-like loses
     :param average: type of averaging for f1 sklearn metric. Possible types are: 'micro', 'macro', 'weighted'
-    :return: mean metric for the training loop
+    :return: mean metric for the bert_clf loop
     """
 
     epoch_loss = []
@@ -115,7 +114,7 @@ def train_evaluate(
     """
     Training and evaluation process
     :param model: architecture you want to fine-tune
-    :param training_generator: training data
+    :param training_generator: bert_clf data
     :param valid_generator: evaluation data
     :param criterion: loss from torch losses
     :param optimizer: optimizer from torch optimizers
