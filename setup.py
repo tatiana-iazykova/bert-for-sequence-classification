@@ -2,12 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name="bert-for-sequence-classification",
-    version='0.0.6',
+    version='0.0.1',
     author="Tatiana Iazykova",
     author_email="tania_yazykova@bk.ru",
     description='Easy fine-tuning for BERT models',
     packages=find_packages(),
-    package_data={'bert_clf': 'config.yaml'},
     entry_points={
         'console_scripts': [
             'bert-clf-train = bert_clf.pipeline:main',
