@@ -1,9 +1,9 @@
 import pandas as pd
-from src.pandas_dataset.PandasDataset import PandasDataset
-from src.pandas_dataset.SimpleDataFrame import SimpleDataFrame
+from bert_clf.src.pandas_dataset.PandasDataset import PandasDataset
+from bert_clf.src.pandas_dataset.SimpleDataFrame import SimpleDataFrame
 from typing import Dict, Any, List, Tuple, Optional, Union
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
-from src.dataset import Dataset
+from bert_clf.src.dataset import Dataset
 import torch
 
 
@@ -38,7 +38,7 @@ def prepare_data_notebook(
     loads data and encodes targets
 
     :param config: config with  all the necessary information for loading data
-    :param train_df: training dataframe
+    :param train_df: bert_clf dataframe
     :param test_df: testing dataframe
     :return: mapper and separated texts and labels
     """
@@ -89,13 +89,13 @@ def prepare_dataset(
     """
 
     :param tokenizer: tokenizer from transformers
-    :param train_texts: list of texts selected for training
-    :param train_targets: list of targets for texts selected for training
+    :param train_texts: list of texts selected for bert_clf
+    :param train_targets: list of targets for texts selected for bert_clf
     :param valid_texts: list of texts selected for evaluation
     :param valid_targets: list of targets for texts selected for evaluation
     :param config:  config with all the necessary information to set up a model
 
-    :return: Dataloader  objects for training and evaluatuon
+    :return: Dataloader  objects for bert_clf and evaluatuon
     """
 
     training_set = Dataset(

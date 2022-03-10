@@ -1,18 +1,20 @@
 import os
-from src.training_utils import train_evaluate
-from src.BertCLF import BertCLF
-from transformers import AutoModel
-from transformers import AutoTokenizer
+import json
 import torch
 import torch.optim as optim
 import torch.nn as nn
-from utils import load_config
-import json
-from src.preparing_data_utils import prepare_data, prepare_dataset
+from transformers import AutoModel, AutoTokenizer
+from bert_clf.utils import load_config, get_argparse
+from bert_clf.src.training_utils import train_evaluate
+from bert_clf.src.BertCLF import BertCLF
+from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
 
 
-def main():
-    config = load_config("config.yaml")
+def train(path_to_config: str):
+    """
+    path_to_config: path to yaml config file with all the information concerning the training
+    """
+    config = load_config(path_to_config)
 
     os.makedirs(config['training']['output_dir'], exist_ok=True)
 
@@ -68,6 +70,13 @@ def main():
     torch.save(model.state_dict(), os.path.join(config['training']['output_dir'], "model"))
     with open(os.path.join(config['training']['output_dir'], 'label_mapper.json'), mode='w', encoding='utf-8') as f:
         json.dump(model.mapper, f, indent=4, ensure_ascii=False)
+
+
+def main():
+    parser = get_argparse()
+    args = parser.parse_args()
+
+    train(path_to_config=args.path_to_config)
 
 
 if __name__ == "__main__":

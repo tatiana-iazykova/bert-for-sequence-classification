@@ -1,6 +1,6 @@
 import pandas as pd
 from pathlib import Path
-from src.pandas_dataset.BaseDataset import BaseDataset
+from bert_clf.src.pandas_dataset.BaseDataset import BaseDataset
 import os
 
 
