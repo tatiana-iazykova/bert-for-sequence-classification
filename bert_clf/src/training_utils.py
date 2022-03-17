@@ -1,9 +1,11 @@
 import torch
 from sklearn.metrics import classification_report
 from bert_clf.src.BertCLF import BertCLF
+from bert_clf.src.early_stopping import EarlyStopping
 import numpy as np
 from sklearn.metrics import f1_score
 from tqdm import tqdm
+from typing import Dict, Any
 
 
 def predict_metrics(
@@ -109,7 +111,8 @@ def train_evaluate(
         criterion: torch.optim,
         optimizer: torch.nn,
         num_epochs: int,
-        average: str
+        average: str,
+        config: Dict[str, Dict[str, Any]]
 ):
     """
     Training and evaluation process
@@ -124,6 +127,10 @@ def train_evaluate(
 
     :return: fine-tuned model
     """
+
+    stopper = EarlyStopping(
+        config=config,
+    )
     for i in range(num_epochs):
 
         print(f"==== Epoch {i+1} out of {num_epochs} ====")
@@ -141,6 +148,17 @@ def train_evaluate(
             criterion=criterion,
             average=average
         )
+
+        stopper(model=model, val_loss=evl)
+
+        if stopper.early_stop:
+            print(f'Train F1: {tr}\nEval F1: {evl}')
+            print("\n\n")
+            predict_metrics(
+                model=model,
+                iterator=valid_generator
+            )
+            return model
 
         print(f'Train F1: {tr}\nEval F1: {evl}')
         print()

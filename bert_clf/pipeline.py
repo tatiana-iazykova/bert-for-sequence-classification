@@ -64,12 +64,27 @@ def train(path_to_config: str):
         criterion=criterion,
         optimizer=optimizer,
         num_epochs=config['training']['num_epochs'],
-        average=config['training']['average_f1']
+        average=config['training']['average_f1'],
+        config=config
     )
 
-    torch.save(model.state_dict(), os.path.join(config['training']['output_dir'], "model"))
-    with open(os.path.join(config['training']['output_dir'], 'label_mapper.json'), mode='w', encoding='utf-8') as f:
-        json.dump(model.mapper, f, indent=4, ensure_ascii=False)
+    if config['training']['save_state_dict']:
+        torch.save(
+            model.state_dict(),
+            os.path.join(config["training"]["output_dir"], "model.pth"),
+        )
+
+        with open(
+                os.path.join(config["training"]["output_dir"], 'label_mapper.json'),
+                mode='w',
+                encoding='utf-8'
+        ) as f:
+            json.dump(model.mapper, f, indent=4, ensure_ascii=False)
+    else:
+        torch.save(
+            model,
+            os.path.join(config["training"]["output_dir"], "model.pth"),
+        )
 
 
 def main():

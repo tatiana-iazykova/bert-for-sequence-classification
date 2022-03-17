@@ -21,6 +21,9 @@ data:
 
 # training
 training:
+  save_state_dict: false
+  delta: 0.001
+  patience: 7
   num_epochs: 1
   average_f1: macro
   output_dir: results/
