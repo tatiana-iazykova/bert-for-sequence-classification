@@ -29,3 +29,64 @@ Example config file can be found [here](config.yaml)
 
 Example notebook can be found [here](example/pipeline_example.ipynb)
 
+### Inference mode
+
+When using your trained model for inference it depends on how you saved your model
+
+if path_to_state_dict in [config](config.yaml) is equal to false, 
+then if you have the library installed:
+
+```python
+
+import torch
+import pandas as pd
+
+device = torch.device("cuda" if  torch.cuda.is_available() else "cpu")
+
+model = torch.load(
+    "path_to_saved_model", map_location=device
+)
+    
+model.eval()
+
+df = pd.read_csv("path_to_some_df")
+
+df["target_column"] = df["text_column"].apply(model.predict)
+```
+
+Otherwise:
+
+```python
+
+import torch
+import json
+import pandas as pd
+from bert_clf.src.BertCLF import BertCLF
+from transformers import AutoModel, AutoTokenizer
+
+device = torch.device("cuda" if  torch.cuda.is_available() else "cpu")
+
+tokenizer = AutoTokenizer.from_pretrained(
+        pretrained_model_name_or_path="pretrained_model_name_or_path"
+    )
+model_bert = AutoModel.from_pretrained(
+    pretrained_model_name_or_path="pretrained_model_name_or_path"
+).to(device)
+
+id2label = json.load(open("path/to/saved/mapper")) # mapper is saved with the state dict
+
+model = BertCLF(
+    pretrained_model=model_bert,
+    tokenizer=tokenizer,
+    id2label=id2label,
+    dropout="some number",
+    tiny="type of your bert",
+    device=device
+)
+
+model.eval()
+    
+df = pd.read_csv("path_to_some_df")
+
+df["target_column"] = df["text_column"].apply(model.predict)
+```
