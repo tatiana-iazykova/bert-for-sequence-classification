@@ -152,6 +152,7 @@ def train_evaluate(
         stopper(model=model, val_loss=evl)
 
         if stopper.early_stop:
+            print('Early stopping')
             print(f'Train F1: {tr}\nEval F1: {evl}')
             print("\n\n")
             predict_metrics(
