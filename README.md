@@ -20,7 +20,7 @@ You can learn CUDA version installed on your device by typing `nvidia-smi` in co
 ### CLI Use
 
 ```
-bert-clf-train --path_to_config <path to yaml file>\
+bert-clf-train --path_to_config <path to yaml file>
 ```
 
 Example config file can be found [here](config.yaml)
