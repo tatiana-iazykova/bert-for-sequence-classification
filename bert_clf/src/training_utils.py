@@ -121,8 +121,8 @@ def train_evaluate(
     :param valid_generator: evaluation data
     :param criterion: loss from torch losses
     :param optimizer: optimizer from torch optimizers
-    :param num_epocs: number of epochs,
-    :param device: device,
+    :param num_epochs: number of epochs,
+    :param config: configuration file with all the parameters needed for training the model,
     :param average: f1-averaging
 
     :return: fine-tuned model
