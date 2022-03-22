@@ -33,7 +33,7 @@ def predict_metrics(
     true = [model.mapper[x] for x in true]
     pred = [model.mapper[x] for x in pred]
 
-    print(classification_report(true, pred))
+    print(classification_report(true, pred, zero_division=0))
 
 
 def train(
@@ -121,8 +121,8 @@ def train_evaluate(
     :param valid_generator: evaluation data
     :param criterion: loss from torch losses
     :param optimizer: optimizer from torch optimizers
-    :param num_epocs: number of epochs,
-    :param device: device,
+    :param num_epochs: number of epochs,
+    :param config: configuration file with all the parameters needed for training the model,
     :param average: f1-averaging
 
     :return: fine-tuned model
@@ -152,6 +152,7 @@ def train_evaluate(
         stopper(model=model, val_loss=evl)
 
         if stopper.early_stop:
+            print('Early stopping')
             print(f'Train F1: {tr}\nEval F1: {evl}')
             print("\n\n")
             predict_metrics(

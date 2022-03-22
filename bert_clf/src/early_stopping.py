@@ -1,8 +1,4 @@
-import json
-import os
-
 import numpy as np
-import torch
 
 
 class EarlyStopping:
@@ -27,7 +23,7 @@ class EarlyStopping:
 
         if self.best_score is None:
             self.best_score = score
-            self.save_checkpoint(val_loss, model)
+            self.val_loss_min = val_loss
 
         elif score < self.best_score + self.delta:
             self.counter += 1
@@ -35,28 +31,5 @@ class EarlyStopping:
                 self.early_stop = True
         else:
             self.best_score = score
-            self.save_checkpoint(val_loss, model)
+            self.val_loss_min = val_loss
             self.counter = 0
-
-    def save_checkpoint(self, val_loss, model):
-        """Saves model when validation loss decrease."""
-
-        if self.config['training']['save_state_dict']:
-            torch.save(
-                model.state_dict(),
-                os.path.join(self.config["training"]["output_dir"], "model.pth"),
-            )
-
-            with open(
-                    os.path.join(self.config["training"]["output_dir"], 'label_mapper.json'),
-                    mode='w',
-                    encoding='utf-8'
-            ) as f:
-                json.dump(model.mapper, f, indent=4, ensure_ascii=False)
-        else:
-            torch.save(
-                model,
-                os.path.join(self.config["training"]["output_dir"], "model.pth"),
-            )
-
-        self.val_loss_min = val_loss

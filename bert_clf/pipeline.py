@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from transformers import AutoModel, AutoTokenizer
-from bert_clf.utils import load_config, get_argparse
+from bert_clf.utils import load_config, get_argparse, set_global_seed
 from bert_clf.src.training_utils import train_evaluate
 from bert_clf.src.BertCLF import BertCLF
 from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
@@ -15,6 +15,8 @@ def train(path_to_config: str):
     path_to_config: path to yaml config file with all the information concerning the training
     """
     config = load_config(path_to_config)
+
+    set_global_seed(seed=config['data']['random_state'])
 
     os.makedirs(config['training']['output_dir'], exist_ok=True)
 
