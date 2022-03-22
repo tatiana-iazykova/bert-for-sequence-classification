@@ -33,7 +33,7 @@ def predict_metrics(
     true = [model.mapper[x] for x in true]
     pred = [model.mapper[x] for x in pred]
 
-    print(classification_report(true, pred))
+    print(classification_report(true, pred, zero_division=0))
 
 
 def train(
