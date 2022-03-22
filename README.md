@@ -84,6 +84,13 @@ model = BertCLF(
     device=device
 )
 
+model.load_state_dict(
+    torch.load(
+    "path_to_state_dict", map_location=device
+    ),
+    strict=False
+)
+
 model.eval()
     
 df = pd.read_csv("path_to_some_df")
