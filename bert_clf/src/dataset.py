@@ -1,5 +1,5 @@
 import torch
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Any
 import numpy as np
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
@@ -11,7 +11,7 @@ class Dataset(torch.utils.data.Dataset):
             tokenizer: PreTrainedTokenizerBase,
             maxlen: int,
             texts: Union[List[str], np.ndarray],
-            targets: Union[List[str], np.ndarray]
+            targets: Union[List[Any], np.ndarray]
     ):
         self.tokenizer = tokenizer
         self.texts = self.texts = [torch.LongTensor(self.tokenizer.encode(

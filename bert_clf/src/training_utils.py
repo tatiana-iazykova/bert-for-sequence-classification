@@ -5,7 +5,7 @@ from bert_clf.src.early_stopping import EarlyStopping
 import numpy as np
 from sklearn.metrics import f1_score
 from tqdm import tqdm
-from typing import Dict, Any
+from typing import Dict, Any, Optional, Union, List, Tuple
 
 
 def predict_metrics(
@@ -41,8 +41,9 @@ def train(
         iterator: torch.utils.data.DataLoader,
         optimizer: torch.optim,
         criterion: torch.nn,
-        average: str = 'macro'
-) -> float:
+        average: str = 'macro',
+        other_metrics: Optional[Union[str, List[str]]] = None
+) -> Tuple[float, Optional[Dict[str, float]]]:
     """
     :param model: model architecture that you want to fine-tune
     :param iterator: iterator with data reserved for bert_clf
@@ -54,6 +55,16 @@ def train(
 
     epoch_loss = []
     epoch_f1 = []
+    metrics = None
+    if other_metrics is not None:
+        metrics = {}
+        if type(other_metrics) == str:
+            metrics[other_metrics] = []
+        elif type(other_metrics) == list:
+            for m in other_metrics:
+                metrics[m] = []
+        else:
+            raise ValueError("Other metrics can be only in list or str format")
 
     model.train()
 
@@ -70,16 +81,23 @@ def train(
 
         epoch_loss.append(loss.item())
         epoch_f1.append(f1_score(y_true, preds, average=average))
+        if metrics is not None:
+            for k in metrics:
+                metrics[k].append(f1_score(y_true, preds, average=k))
 
-    return np.mean(epoch_f1)
+    if metrics is not None:
+        for k, v in metrics.items():
+            metrics[k] = np.mean(v)
+    return np.mean(epoch_f1), metrics
 
 
 def evaluate(
         model: BertCLF,
         iterator: torch.utils.data.DataLoader,
         criterion: torch.nn,
-        average: str = 'macro'
-) -> float:
+        average: str = 'macro',
+        other_metrics: Optional[Union[str, List[str]]] = None
+) -> Tuple[float, Optional[Dict[str, float]]]:
     """
     :param model: trained model (instance of class model.CLF)
     :param iterator: instance of torch.utils.data.DataLoader
@@ -89,6 +107,16 @@ def evaluate(
     """
     epoch_loss = []
     epoch_f1 = []
+    metrics = None
+    if other_metrics is not None:
+        metrics = {}
+        if type(other_metrics) == str:
+            metrics[other_metrics] = []
+        elif type(other_metrics) == list:
+            for m in other_metrics:
+                metrics[m] = []
+        else:
+            raise ValueError("Other metrics can be only in list or str format")
 
     model.eval()
     with torch.no_grad():
@@ -100,8 +128,15 @@ def evaluate(
 
             epoch_loss.append(loss.item())
             epoch_f1.append(f1_score(y_true, preds, average=average))
+            if metrics is not None:
+                for k in metrics:
+                    metrics[k].append(f1_score(y_true, preds, average=k))
 
-    return np.mean(epoch_f1)
+    if metrics is not None:
+        for k, v in metrics.items():
+            metrics[k] = np.mean(v)
+
+    return np.mean(epoch_f1), metrics
 
 
 def train_evaluate(
@@ -112,7 +147,7 @@ def train_evaluate(
         optimizer: torch.nn,
         num_epochs: int,
         average: str,
-        config: Dict[str, Dict[str, Any]]
+        config: Dict[str, Union[Dict[str, Any], List[str]]]
 ):
     """
     Training and evaluation process
@@ -131,38 +166,46 @@ def train_evaluate(
     stopper = EarlyStopping(
         config=config,
     )
+
     for i in range(num_epochs):
 
         print(f"==== Epoch {i+1} out of {num_epochs} ====")
-        tr = train(
+        tr, metrics_train = train(
             model=model,
             iterator=training_generator,
             optimizer=optimizer,
             criterion=criterion,
-            average=average
+            average=average,
+            other_metrics=config['other_metrics']
         )
 
-        evl = evaluate(
+        evl, metrics_eval = evaluate(
             model=model,
             iterator=valid_generator,
             criterion=criterion,
-            average=average
+            average=average,
+            other_metrics=config['other_metrics']
         )
 
-        stopper(model=model, val_loss=evl)
+        if config['early_stopping'] is True:
+            stopper(model=model, val_loss=evl)
 
-        if stopper.early_stop:
-            print('Early stopping')
-            print(f'Train F1: {tr}\nEval F1: {evl}')
-            print("\n\n")
-            predict_metrics(
-                model=model,
-                iterator=valid_generator
-            )
-            return model
+            if stopper.early_stop:
+                print('Early stopping')
+                print(f'Train F1: {tr}\nEval F1: {evl}')
+                print("\n\n")
+                predict_metrics(
+                    model=model,
+                    iterator=valid_generator
+                )
+                return model
 
         print(f'Train F1: {tr}\nEval F1: {evl}')
         print()
+        if metrics_train is not None and metrics_eval is not None:
+            for m in metrics_train:
+                print(f'Train F1 {m}: {metrics_train[m]}\nEval F1 {m}: {metrics_eval[m]}')
+                print()
 
     print()
     predict_metrics(
