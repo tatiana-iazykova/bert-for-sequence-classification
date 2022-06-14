@@ -32,3 +32,4 @@ training:
     - micro
     - weighted
   output_dir: results/
+  class_weight: true

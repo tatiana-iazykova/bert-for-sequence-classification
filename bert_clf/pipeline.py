@@ -8,6 +8,8 @@ from bert_clf.utils import load_config, get_argparse, set_global_seed
 from bert_clf.src.training_utils import train_evaluate
 from bert_clf.src.BertCLF import BertCLF
 from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
+from sklearn.utils.class_weight import compute_class_weight
+import numpy as np
 
 
 def train(path_to_config: str):
@@ -48,7 +50,19 @@ def train(path_to_config: str):
         )
 
     optimizer = optim.Adam(model.parameters(), lr=float(config['transformer_model']['learning_rate']))
-    criterion = nn.NLLLoss()
+
+    if config['training']['class_weight']:
+        class_weight = compute_class_weight(
+            class_weight='balanced',
+            classes=np.unique(train_targets),
+            y=train_targets,
+        )
+
+        class_weight = torch.Tensor(class_weight).to(device)
+        criterion = nn.NLLLoss(weight=class_weight)
+
+    else:
+        criterion = nn.NLLLoss()
 
     training_generator, valid_generator = prepare_dataset(
         tokenizer=tokenizer,

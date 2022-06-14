@@ -39,6 +39,3 @@ def set_global_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
-
-
-set_global_seed(42)

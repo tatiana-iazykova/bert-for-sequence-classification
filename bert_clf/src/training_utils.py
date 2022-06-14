@@ -97,23 +97,35 @@ def evaluate(
         criterion: torch.nn,
         average: str = 'macro',
         other_metrics: Optional[Union[str, List[str]]] = None
-) -> Tuple[float, Optional[Dict[str, float]]]:
+) -> Tuple[np.ndarray, Optional[Dict[str, float]]]:
     """
     :param model: trained model (instance of class model.CLF)
     :param iterator: instance of torch.utils.data.DataLoader
     :param criterion: instance of torch-like loses
     :param average: type of averaging for f1 sklearn metric. Possible types are: 'micro', 'macro', 'weighted'
+    :param other_metrics: other metrics you would like to track. NOTE: they wouldn't affect the training provess
     :return: mean metric for the evaluating loop
     """
+
     epoch_loss = []
     epoch_f1 = []
     metrics = None
+
+    if average not in ['micro', 'macro', 'weighted']:
+        raise ValueError(f"average parameter can only be 'micro', 'macro', 'weighted', got '{average}'")
+
     if other_metrics is not None:
         metrics = {}
         if type(other_metrics) == str:
+            if other_metrics not in ['micro', 'macro', 'weighted']:
+                raise ValueError(f"other_metrics parameter can only be 'micro',"
+                                 f" 'macro', 'weighted', got '{other_metrics}'")
             metrics[other_metrics] = []
         elif type(other_metrics) == list:
             for m in other_metrics:
+                if m not in ['micro', 'macro', 'weighted']:
+                    raise ValueError(f"other_metrics parameter can only be 'micro',"
+                                     f" 'macro', 'weighted', got '{m}'")
                 metrics[m] = []
         else:
             raise ValueError("Other metrics can be only in list or str format")
