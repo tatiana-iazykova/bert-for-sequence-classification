@@ -10,7 +10,7 @@ from transformers import AutoModel, AutoTokenizer
 from bert_clf.src.BertCLF import BertCLF
 from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
 from bert_clf.src.training_utils import train_evaluate
-from bert_clf.utils import load_config, get_argparse, set_global_seed, import_loss
+from bert_clf.utils import load_config, get_argparse, set_global_seed
 
 
 def train(path_to_config: str):
@@ -20,7 +20,8 @@ def train(path_to_config: str):
     config = load_config(path_to_config)
 
     try:
-        import_loss(config=config)
+        import_line = f'from torch.nn import {config["training"]["loss"]} as loss_func'
+        exec(import_line, globals())
     except ImportError:
         raise ImportError("Couldn't find your loss function in torch.nn module, please check that you spelled your loss"
                           "function correctly and that it exists in this version of PyTorch")

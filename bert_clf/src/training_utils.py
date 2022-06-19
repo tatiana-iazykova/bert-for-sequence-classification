@@ -188,7 +188,7 @@ def train_evaluate(
             optimizer=optimizer,
             criterion=criterion,
             average=average,
-            other_metrics=config['other_metrics']
+            other_metrics=config['training']['other_metrics']
         )
 
         evl, metrics_eval = evaluate(
@@ -196,10 +196,10 @@ def train_evaluate(
             iterator=valid_generator,
             criterion=criterion,
             average=average,
-            other_metrics=config['other_metrics']
+            other_metrics=config['training']['other_metrics']
         )
 
-        if config['early_stopping'] is True:
+        if config['training']['early_stopping'] is True:
             stopper(model=model, val_loss=evl)
 
             if stopper.early_stop:
