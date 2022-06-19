@@ -33,3 +33,4 @@ training:
     - weighted
   output_dir: results/
   class_weight: true
+  loss: NLLLoss

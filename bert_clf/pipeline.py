@@ -1,15 +1,16 @@
-import os
 import json
+import os
+
+import numpy as np
 import torch
 import torch.optim as optim
-import torch.nn as nn
+from sklearn.utils.class_weight import compute_class_weight
 from transformers import AutoModel, AutoTokenizer
-from bert_clf.utils import load_config, get_argparse, set_global_seed
-from bert_clf.src.training_utils import train_evaluate
+
 from bert_clf.src.BertCLF import BertCLF
 from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
-from sklearn.utils.class_weight import compute_class_weight
-import numpy as np
+from bert_clf.src.training_utils import train_evaluate
+from bert_clf.utils import load_config, get_argparse, set_global_seed, import_loss
 
 
 def train(path_to_config: str):
@@ -17,6 +18,12 @@ def train(path_to_config: str):
     path_to_config: path to yaml config file with all the information concerning the training
     """
     config = load_config(path_to_config)
+
+    try:
+        import_loss(config=config)
+    except ImportError:
+        raise ImportError("Couldn't find your loss function in torch.nn module, please check that you spelled your loss"
+                          "function correctly and that it exists in this version of PyTorch")
 
     set_global_seed(seed=config['data']['random_state'])
 
@@ -59,10 +66,10 @@ def train(path_to_config: str):
         )
 
         class_weight = torch.Tensor(class_weight).to(device)
-        criterion = nn.NLLLoss(weight=class_weight)
+        criterion = loss_func(weight=class_weight)
 
     else:
-        criterion = nn.NLLLoss()
+        criterion = loss_func()
 
     training_generator, valid_generator = prepare_dataset(
         tokenizer=tokenizer,
