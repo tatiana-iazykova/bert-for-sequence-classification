@@ -21,7 +21,7 @@ def train(path_to_config: str):
 
     try:
         loss_func = str_to_class(module_name='torch.nn', class_name=config["training"]["loss"])
-    except ImportError:
+    except AttributeError:
         raise ImportError("Couldn't find your loss function in torch.nn module, please check that you spelled your loss"
                           "function correctly and that it exists in this version of PyTorch")
 
