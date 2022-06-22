@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Tuple, Optional, Union
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 from bert_clf.src.dataset import Dataset
 import torch
+import warnings
 
 
 def prepare_data(
@@ -73,6 +74,10 @@ def get_mapper_and_separated_data(
     train_texts = df.train[config['data']['text_column']].to_list()
     valid_texts = df.test[config['data']['text_column']].to_list()
     train_targets = df.train[config['data']['target_column']].map(label2id).to_list()
+
+    if len(set(df.test[config['data']['target_column']].to_list()).intersection(label2id)) != len(label2id):
+        raise ValueError('Some labels in test are not present in train')
+
     valid_targets = df.test[config['data']['target_column']].map(label2id).to_list()
 
     return id2label, train_texts, valid_texts, train_targets, valid_targets

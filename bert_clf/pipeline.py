@@ -7,9 +7,7 @@ import torch.optim as optim
 from sklearn.utils.class_weight import compute_class_weight
 from transformers import AutoModel, AutoTokenizer
 
-from bert_clf.src.BertCLF import BertCLF
-from bert_clf.src.preparing_data_utils import prepare_data, prepare_dataset
-from bert_clf.src.training_utils import train_evaluate
+from bert_clf import BertCLF, train_evaluate, prepare_data, prepare_dataset
 from bert_clf.utils import load_config, get_argparse, set_global_seed, str_to_class
 
 

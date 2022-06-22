@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="bert-for-sequence-classification",
-    version='0.0.2',
+    version='0.0.3',
     author="Tatiana Iazykova",
     author_email="tania_yazykova@bk.ru",
     description='Easy fine-tuning for BERT models',
@@ -13,7 +13,7 @@ setup(
         ],
     },
     install_requires=[
-        'transformers==4.2.0',
+        'transformers>=4.2.0, <4.6',
         'torch>=1.7.1, != 1.10',
         'numpy>=1.19.5',
         'pandas>=1.1.5',
