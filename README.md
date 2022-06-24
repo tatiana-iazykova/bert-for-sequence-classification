@@ -1,3 +1,6 @@
+[![pypi version](https://img.shields.io/pypi/v/bert-for-sequence-classification)](https://pypi.org/project/bert-for-sequence-classification)
+[![pypi downloads](https://img.shields.io/pypi/dm/bert-for-sequence-classification)](https://pypi.org/project/bert-for-sequence-classification)
+
 # bert-for-sequence-classification
 Pipeline for easy fine-tuning of BERT architecture for sequence classification
 
