@@ -1,8 +1,11 @@
-import yaml
-from argparse import ArgumentParser
-import torch
 import random
+from argparse import ArgumentParser
+
 import numpy as np
+import torch
+import yaml
+import importlib
+from typing import ClassVar
 
 
 def load_config(path: str):
@@ -41,4 +44,14 @@ def set_global_seed(seed: int):
     torch.backends.cudnn.deterministic = True
 
 
-set_global_seed(42)
+def str_to_class(module_name: str, class_name: str) -> ClassVar:
+    """
+    Convert string to Python class object.
+    https://stackoverflow.com/questions/1176136/convert-string-to-python-class-object
+    """
+
+    # load the module, will raise ImportError if module cannot be loaded
+    module = importlib.import_module(module_name)
+    # get the class, will raise AttributeError if class cannot be found
+    cls = getattr(module, class_name)
+    return cls

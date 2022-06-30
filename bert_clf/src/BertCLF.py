@@ -1,8 +1,9 @@
+from typing import Dict
+
 import torch
 import torch.nn as nn
-from typing import Dict
-from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 from transformers.modeling_utils import PreTrainedModel
+from transformers.tokenization_utils_base import PreTrainedTokenizerBase
 
 
 class BertCLF(nn.Module):

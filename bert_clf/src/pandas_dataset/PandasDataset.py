@@ -1,13 +1,15 @@
-import pandas as pd
-from pathlib import Path
-from bert_clf.src.pandas_dataset.BaseDataset import BaseDataset
 import os
+
+import pandas as pd
+
+from bert_clf.src.pandas_dataset.BaseDataset import BaseDataset
 
 
 class PandasDataset(BaseDataset):
     """
     Dataset class for datasets that have simple structure
     """
+
     def __init__(self,
                  train_data_path: str,
                  test_data_path: str = None,
@@ -35,7 +37,7 @@ class PandasDataset(BaseDataset):
             test_size=test_size
         )
 
-    def read_data(self, path: Path) -> pd.DataFrame:
+    def read_data(self, path: str) -> pd.DataFrame:
         """
         Given the path to the file returns extension of that file
 
@@ -51,10 +53,10 @@ class PandasDataset(BaseDataset):
                              f"to one of the following formats {list(self.valid_data_types.keys())}.")
 
     @staticmethod
-    def _read_csv(path: Path, extension: str) -> pd.DataFrame:
+    def _read_csv(path: str, extension: str) -> pd.DataFrame:
         """
         Reads a csv file given its path
-        :param path: Path("../../some_file.csv")
+        :param path: "../../some_file.csv"
         :return: dataframe
         """
         sep = ','
@@ -64,10 +66,10 @@ class PandasDataset(BaseDataset):
         return pd.read_csv(filepath_or_buffer=path, sep=sep, encoding="utf-8")
 
     @staticmethod
-    def _read_excel(path: Path, extension: str) -> pd.DataFrame:
+    def _read_excel(path: str, extension: str) -> pd.DataFrame:
         """
         Reads a xls or xlsx file given its path
-        :param path: Path("../../some_file.xlsx")
+        :param path: "../../some_file.xlsx"
         :return: dataframe
         """
         engine = 'openpyxl'
@@ -77,15 +79,13 @@ class PandasDataset(BaseDataset):
         return pd.read_excel(io=path, engine=engine)
 
     @staticmethod
-    def _read_json(path: Path, extension: str) -> pd.DataFrame:
+    def _read_json(path: str, extension: str) -> pd.DataFrame:
         """
         Reads a json or jsonl file given its path
-        :param path: Path("../../some_file.jsonl")
+        :param path: "../../some_file.jsonl"
         :return: dataframe
         """
         lines = False
         if extension == '.jsonl':
             lines = True
         return pd.read_json(path_or_buf=path, lines=lines, encoding="utf-8")
-
-
