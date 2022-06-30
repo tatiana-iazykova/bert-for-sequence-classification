@@ -14,7 +14,7 @@ class Dataset(torch.utils.data.Dataset):
             targets: Union[List[Any], np.ndarray]
     ):
         self.tokenizer = tokenizer
-        self.texts = self.texts = [torch.LongTensor(self.tokenizer.encode(
+        self.texts = [torch.LongTensor(self.tokenizer.encode(
             t,
             truncation=True,
             max_length=maxlen
