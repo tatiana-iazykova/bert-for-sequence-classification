@@ -42,7 +42,6 @@ def train(path_to_config: str):
         tokenizer=tokenizer,
         id2label=id2label,
         dropout=config['transformer_model']['dropout'],
-        tiny=config['transformer_model']['tiny_bert'],
         device=device
     )
 
