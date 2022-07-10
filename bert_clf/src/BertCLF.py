@@ -14,7 +14,6 @@ class BertCLF(nn.Module):
             tokenizer: PreTrainedTokenizerBase,
             id2label: Dict[int, str],
             dropout: float,
-            tiny: bool = True,
             device: torch.device = torch.device('cpu')
     ):
         super().__init__()
@@ -25,9 +24,7 @@ class BertCLF(nn.Module):
         self.mapper = id2label
         self.device = device
 
-        out_bert = 768
-        if tiny:
-            out_bert = 312
+        out_bert = self.pretrained_model.config.hidden_size
         self.fc = nn.Linear(out_bert, len(self.mapper))
 
     def forward(self, texts: torch.Tensor) -> torch.Tensor:
@@ -40,9 +37,19 @@ class BertCLF(nn.Module):
 
         return outputs
 
-    def predict(self, text: str) -> str:
+    def _predict(self, text: str) -> torch.Tensor:
         inputs = self.tokenizer.encode(text, return_tensors="pt", truncation=True)
         outputs = self(inputs)
+        return outputs
+
+    def predict(self, text: str) -> str:
+        outputs = self._predict(text=text)
         pred = outputs.argmax(1).item()
         pred_text = self.mapper[pred]
         return pred_text
+
+    def predict_proba(self, text: str) -> Dict[str, float]:
+        outputs = self._predict(text=text)
+        probas = torch.nn.functional.softmax(outputs, dim=1).cpu().numpy().tolist()
+        probas_dict = {self.mapper[i]: proba for i, proba in enumerate(probas)}
+        return probas_dict

@@ -83,7 +83,6 @@ model = BertCLF(
     tokenizer=tokenizer,
     id2label=id2label,
     dropout="some number",
-    tiny="type of your bert",
     device=device
 )
 
