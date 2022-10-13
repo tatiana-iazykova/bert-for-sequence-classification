@@ -14,7 +14,7 @@ class TestDocParser(TestCase):
 
     request_data_dir = Path(__file__).parent / "request"
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
 
     model = torch.load(
         "results/model.pth", map_location=device
