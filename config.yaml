@@ -4,7 +4,6 @@ transformer_model:
   path_to_state_dict: false
   device: cpu
   dropout: 0.2
-  tiny_bert: true
   learning_rate: 1e-6
   batch_size: 8
   shuffle: true

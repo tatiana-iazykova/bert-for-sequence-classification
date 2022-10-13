@@ -13,7 +13,7 @@ setup(
         ],
     },
     install_requires=[
-        'transformers>=4.2.0, <4.6',
+        'transformers>=4.2.0',
         'torch>=1.7.1, != 1.10',
         'numpy>=1.19.5',
         'pandas>=1.1.5',
