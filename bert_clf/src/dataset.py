@@ -18,7 +18,7 @@ class Dataset(torch.utils.data.Dataset):
             t,
             truncation=True,
             max_length=maxlen
-        )) for t in texts]
+        )) for t in texts] #TODO add collator
         self.texts = torch.nn.utils.rnn.pad_sequence(self.texts, batch_first=True,
                                                      padding_value=self.tokenizer.pad_token_id)
 
