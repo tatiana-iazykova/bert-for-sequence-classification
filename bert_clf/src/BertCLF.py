@@ -39,7 +39,7 @@ class BertCLF(nn.Module):
 
     def _predict(self, text: str) -> torch.Tensor:
         inputs = self.tokenizer.encode(text, return_tensors="pt", truncation=True)
-        outputs = self(inputs)
+        outputs = self(inputs.to(self.pretrained_model.device))
         return outputs
 
     def predict(self, text: str) -> str:
