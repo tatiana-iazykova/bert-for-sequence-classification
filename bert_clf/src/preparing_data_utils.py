@@ -3,7 +3,7 @@ from bert_clf.src.pandas_dataset.PandasDataset import PandasDataset
 from bert_clf.src.pandas_dataset.SimpleDataFrame import SimpleDataFrame
 from typing import Dict, Any, List, Tuple, Optional, Union
 from transformers.tokenization_utils_base import PreTrainedTokenizerBase
-from bert_clf.src.dataset import Dataset
+from bert_clf.src.dataset import Dataset, Collator
 import torch
 import warnings
 
@@ -104,29 +104,29 @@ def prepare_dataset(
     """
 
     training_set = Dataset(
-        tokenizer=tokenizer,
         texts=train_texts,
         targets=train_targets,
-        maxlen=config['transformer_model']['maxlen']
     )
+
+    collator = Collator(maxlen=config['transformer_model']['maxlen'], tokenizer=tokenizer)
 
     training_generator = torch.utils.data.DataLoader(
         training_set,
         batch_size=config['transformer_model']['batch_size'],
-        shuffle=config['transformer_model']['shuffle']
+        shuffle=config['transformer_model']['shuffle'],
+        collate_fn=collator.collate
     )
 
     valid_set = Dataset(
-        tokenizer=tokenizer,
         texts=valid_texts,
         targets=valid_targets,
-        maxlen=config['transformer_model']['maxlen']
     )
 
     valid_generator = torch.utils.data.DataLoader(
         valid_set,
         batch_size=config['transformer_model']['batch_size'],
-        shuffle=config['transformer_model']['shuffle']
+        shuffle=config['transformer_model']['shuffle'],
+        collate_fn=collator.collate
     )
 
     return training_generator, valid_generator
