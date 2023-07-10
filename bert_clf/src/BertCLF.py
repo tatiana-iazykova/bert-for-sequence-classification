@@ -43,13 +43,17 @@ class BertCLF(nn.Module):
         return outputs
 
     def predict(self, text: str) -> str:
-        outputs = self._predict(text=text)
-        pred = outputs.argmax(1).item()
-        pred_text = self.mapper[pred]
+        self.eval()
+        with torch.no_grad():
+            outputs = self._predict(text=text)
+            pred = outputs.argmax(1).item()
+            pred_text = self.mapper[pred]
         return pred_text
 
     def predict_proba(self, text: str) -> Dict[str, float]:
-        outputs = self._predict(text=text)
-        probas = torch.nn.functional.softmax(outputs, dim=1).cpu().numpy().tolist()
-        probas_dict = {self.mapper[i]: proba for i, proba in enumerate(probas)}
+        self.eval()
+        with torch.no_grad():
+            outputs = self._predict(text=text)
+            probas = torch.nn.functional.softmax(outputs, dim=1).cpu().detach().numpy().tolist()[0]
+            probas_dict = {self.mapper[i]: proba for i, proba in enumerate(probas)}
         return probas_dict
