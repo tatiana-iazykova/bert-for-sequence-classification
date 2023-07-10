@@ -1,5 +1,5 @@
-transformers==4.2.0
-torch==1.7.1
+transformers>=4.2.0
+torch>=1.7.1
 numpy==1.19.5
 pandas==1.1.5
 scikit-learn==1.0
