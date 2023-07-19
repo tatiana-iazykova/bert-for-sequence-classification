@@ -30,7 +30,7 @@ class TestDocParser(TestCase):
     def test_pred(self, test_id):
 
         true = pd.read_csv(self.response_data_dir / test_id)["target"].to_list()
-        df = pd.read_csv(Path(__file__).parent / test_id)
+        df = pd.read_csv(Path(__file__).parent / "data"/ test_id)
         pred = df["text"].apply(self.model.predict).to_list()
 
         self.assertListEqual(
