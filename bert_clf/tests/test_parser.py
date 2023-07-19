@@ -12,6 +12,7 @@ import os
 
 class TestDocParser(TestCase):
     request_data_dir = Path(__file__).parent / "request"
+    response_data_dir = Path(__file__).parent / "response"
 
     device = "cpu"
 
@@ -28,8 +29,8 @@ class TestDocParser(TestCase):
     ])
     def test_pred(self, test_id):
 
-        true = pd.read_csv(f'response/{test_id}')["target"].to_list()
-        df = pd.read_csv(f'data/{test_id}')
+        true = pd.read_csv(self.response_data_dir / test_id)["target"].to_list()
+        df = pd.read_csv(Path(__file__).parent / test_id)
         pred = df["text"].apply(self.model.predict).to_list()
 
         self.assertListEqual(
@@ -49,19 +50,19 @@ class TestDocParser(TestCase):
             train_df=df
         )
 
-        with open('response/id2label_df.json') as f:
+        with open(self.response_data_dir / 'id2label_df.json') as f:
             id2label_true = json.load(f)
 
-        with open('response/train_texts_df.json') as f:
+        with open(self.response_data_dir / 'train_texts_df.json') as f:
             train_texts_true = json.load(f)
 
-        with open('response/valid_texts_df.json') as f:
+        with open(self.response_data_dir / 'valid_texts_df.json') as f:
             valid_texts_true = json.load(f)
 
-        with open('response/train_targets_df.json') as f:
+        with open(self.response_data_dir / 'train_targets_df.json') as f:
             train_targets_true = json.load(f)
 
-        with open('response/valid_targets_df.json') as f:
+        with open(self.response_data_dir / 'valid_targets_df.json') as f:
             valid_targets_true = json.load(f)
 
         id2label = {}
@@ -77,19 +78,19 @@ class TestDocParser(TestCase):
         )
 
     def test_dataframe(self):
-        with open('response/id2label.json') as f:
+        with open(self.response_data_dir / 'id2label.json') as f:
             id2label_true = json.load(f)
 
-        with open('response/train_texts.json') as f:
+        with open(self.response_data_dir / 'train_texts.json') as f:
             train_texts_true = json.load(f)
 
-        with open('response/valid_texts.json') as f:
+        with open(self.response_data_dir / 'valid_texts.json') as f:
             valid_texts_true = json.load(f)
 
-        with open('response/train_targets.json') as f:
+        with open(self.response_data_dir / 'train_targets.json') as f:
             train_targets_true = json.load(f)
 
-        with open('response/valid_targets.json') as f:
+        with open(self.response_data_dir / 'valid_targets.json') as f:
             valid_targets_true = json.load(f)
 
         id2label_, train_texts, valid_texts, train_targets, valid_targets = prepare_data(config=self.config)
