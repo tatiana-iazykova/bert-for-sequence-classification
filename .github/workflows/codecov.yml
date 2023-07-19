@@ -18,9 +18,7 @@ jobs:
     - name: Generate coverage report
       run: |
         pip install --upgrade pip
-        pip install -r requirements/requirements.in
-        pip install -r requirements/requirements_test.in
-        pip install -r requirements/requirements_dev.in
+        pip install -r requirements.txt
         pip install pytest
         pip install pytest-cov
         coverage run -m pytest
