@@ -11,7 +11,6 @@ import os
 
 
 class TestDocParser(TestCase):
-
     request_data_dir = Path(__file__).parent / "request"
 
     device = "cpu"
@@ -21,7 +20,8 @@ class TestDocParser(TestCase):
     )
 
     model.eval()
-    config = load_config("base_case_config.yaml")
+    config_path = Path(__file__).parent / "base_case_config.yaml"
+    config = load_config(config_path.as_posix())
 
     @parameterized.expand([
         "test.csv",
@@ -42,7 +42,7 @@ class TestDocParser(TestCase):
         df = pd.DataFrame({
             'text': ['aaaaa', 'bbbbb', 'cccc', 'ddddd'],
             'target': [1, 1, 0, 0]
-            })
+        })
 
         id2label_, train_texts, valid_texts, train_targets, valid_targets = prepare_data_notebook(
             config=self.config,
@@ -107,13 +107,13 @@ class TestDocParser(TestCase):
         )
 
     def test_model(self):
-        train("base_case_config.yaml")
+        config_path = Path(__file__).parent / "base_case_config.yaml"
+        train(config_path.as_posix())
 
         model_weights = self.model.state_dict()
 
-        model_trained = torch.load(
-            os.path.join(self.config['training']['output_dir'], 'model.pth'), map_location=self.device
-        )
+        saved_model_path = Path(__file__).parent / self.config['training']['output_dir'] / 'model.pth'
+        model_trained = torch.load(saved_model_path, map_location=self.device)
 
         model_trained.eval()
 
@@ -122,15 +122,14 @@ class TestDocParser(TestCase):
         for k in model_weights:
             self.assertTrue(torch.allclose(model_weights[k], model_trained_weights[k]))
 
-        os.remove(os.path.join(self.config['training']['output_dir'], 'model.pth'))
-
+        os.remove(saved_model_path)
 
     def test_model_encoder(self):
-        train("encoder_case_config.yaml")
+        config_path = Path(__file__).parent / "encoder_case_config.yaml"
+        train(config_path.as_posix())
 
-        model_trained = torch.load(
-            os.path.join(self.config['training']['output_dir'], 'model.pth'), map_location=self.device
-        )
+        saved_model_path = Path(__file__).parent / self.config['training']['output_dir'] / 'model.pth'
+        model_trained = torch.load(saved_model_path, map_location=self.device)
 
         model_trained.eval()
 
@@ -139,4 +138,4 @@ class TestDocParser(TestCase):
         for k in model_trained_weights:
             self.assertTrue(torch.nonzero(model_trained_weights[k]))
 
-        os.remove(os.path.join(self.config['training']['output_dir'], 'model.pth'))
+        os.remove(saved_model_path)
