@@ -8,11 +8,12 @@ transformer_model:
   batch_size: 8
   shuffle: true
   maxlen: 512
+  encoder: false
 
 # data
 data:
-  train_data_path: "data/train.csv"
-  test_data_path: "data/test.csv"
+  train_data_path: "bert_clf/tests/data/train.csv"
+  test_data_path: "bert_clf/tests/data/test.csv"
   text_column: "text"
   target_column: "target"
   random_state: 42

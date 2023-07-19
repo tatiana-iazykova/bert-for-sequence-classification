@@ -5,9 +5,9 @@ import numpy as np
 import torch
 import torch.optim as optim
 from sklearn.utils.class_weight import compute_class_weight
-from transformers import AutoModel, AutoTokenizer
 
-from bert_clf import BertCLF, train_evaluate, prepare_data, prepare_dataset
+from bert_clf import train_evaluate, prepare_data, prepare_dataset
+from bert_clf.src.core import CLFFabric
 from bert_clf.utils import load_config, get_argparse, set_global_seed, str_to_class
 
 
@@ -28,21 +28,14 @@ def train(path_to_config: str):
     os.makedirs(config['training']['output_dir'], exist_ok=True)
 
     device = torch.device(config['transformer_model']['device'])
-    tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=config['transformer_model']["model"]
-    )
-    model_bert = AutoModel.from_pretrained(
-        pretrained_model_name_or_path=config['transformer_model']["model"]
-    ).to(device)
 
     id2label, train_texts, valid_texts, train_targets, valid_targets = prepare_data(config=config)
 
-    model = BertCLF(
-        pretrained_model=model_bert,
-        tokenizer=tokenizer,
+    model = CLFFabric.getter(
+        config=config,
+        pretrained_model_name=config['transformer_model']["model"],
         id2label=id2label,
         dropout=config['transformer_model']['dropout'],
-        device=device
     )
 
     model = model.to(device)
@@ -69,7 +62,7 @@ def train(path_to_config: str):
         criterion = loss_func()
 
     training_generator, valid_generator = prepare_dataset(
-        tokenizer=tokenizer,
+        tokenizer=model.tokenizer,
         train_texts=train_texts,
         train_targets=train_targets,
         valid_texts=valid_texts,

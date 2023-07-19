@@ -11,25 +11,26 @@ import os
 
 
 class TestDocParser(TestCase):
-
     request_data_dir = Path(__file__).parent / "request"
+    response_data_dir = Path(__file__).parent / "response"
 
     device = "cpu"
 
     model = torch.load(
-        "results/model.pth", map_location=device
+        Path(__file__).parent / "results/model.pth", map_location=device
     )
 
     model.eval()
-    config = load_config("base_case_config.yaml")
+    config_path = Path(__file__).parent / "base_case_config.yaml"
+    config = load_config(config_path.as_posix())
 
     @parameterized.expand([
         "test.csv",
     ])
     def test_pred(self, test_id):
 
-        true = pd.read_csv(f'response/{test_id}')["target"].to_list()
-        df = pd.read_csv(f'data/{test_id}')
+        true = pd.read_csv(self.response_data_dir / test_id)["target"].to_list()
+        df = pd.read_csv(Path(__file__).parent / "data"/ test_id)
         pred = df["text"].apply(self.model.predict).to_list()
 
         self.assertListEqual(
@@ -42,26 +43,26 @@ class TestDocParser(TestCase):
         df = pd.DataFrame({
             'text': ['aaaaa', 'bbbbb', 'cccc', 'ddddd'],
             'target': [1, 1, 0, 0]
-            })
+        })
 
         id2label_, train_texts, valid_texts, train_targets, valid_targets = prepare_data_notebook(
             config=self.config,
             train_df=df
         )
 
-        with open('response/id2label_df.json') as f:
+        with open(self.response_data_dir / 'id2label_df.json') as f:
             id2label_true = json.load(f)
 
-        with open('response/train_texts_df.json') as f:
+        with open(self.response_data_dir / 'train_texts_df.json') as f:
             train_texts_true = json.load(f)
 
-        with open('response/valid_texts_df.json') as f:
+        with open(self.response_data_dir / 'valid_texts_df.json') as f:
             valid_texts_true = json.load(f)
 
-        with open('response/train_targets_df.json') as f:
+        with open(self.response_data_dir / 'train_targets_df.json') as f:
             train_targets_true = json.load(f)
 
-        with open('response/valid_targets_df.json') as f:
+        with open(self.response_data_dir / 'valid_targets_df.json') as f:
             valid_targets_true = json.load(f)
 
         id2label = {}
@@ -77,19 +78,19 @@ class TestDocParser(TestCase):
         )
 
     def test_dataframe(self):
-        with open('response/id2label.json') as f:
+        with open(self.response_data_dir / 'id2label.json') as f:
             id2label_true = json.load(f)
 
-        with open('response/train_texts.json') as f:
+        with open(self.response_data_dir / 'train_texts.json') as f:
             train_texts_true = json.load(f)
 
-        with open('response/valid_texts.json') as f:
+        with open(self.response_data_dir / 'valid_texts.json') as f:
             valid_texts_true = json.load(f)
 
-        with open('response/train_targets.json') as f:
+        with open(self.response_data_dir / 'train_targets.json') as f:
             train_targets_true = json.load(f)
 
-        with open('response/valid_targets.json') as f:
+        with open(self.response_data_dir / 'valid_targets.json') as f:
             valid_targets_true = json.load(f)
 
         id2label_, train_texts, valid_texts, train_targets, valid_targets = prepare_data(config=self.config)
@@ -107,13 +108,13 @@ class TestDocParser(TestCase):
         )
 
     def test_model(self):
-        train("base_case_config.yaml")
+        config_path = Path(__file__).parent / "base_case_config.yaml"
+        train(config_path.as_posix())
 
         model_weights = self.model.state_dict()
 
-        model_trained = torch.load(
-            os.path.join(self.config['training']['output_dir'], 'model.pth'), map_location=self.device
-        )
+        saved_model_path = Path(__file__).parent / self.config['training']['output_dir'] / 'model.pth'
+        model_trained = torch.load(saved_model_path, map_location=self.device)
 
         model_trained.eval()
 
@@ -122,4 +123,20 @@ class TestDocParser(TestCase):
         for k in model_weights:
             self.assertTrue(torch.allclose(model_weights[k], model_trained_weights[k]))
 
-        os.remove(os.path.join(self.config['training']['output_dir'], 'model.pth'))
+        os.remove(saved_model_path)
+
+    def test_model_encoder(self):
+        config_path = Path(__file__).parent / "encoder_case_config.yaml"
+        train(config_path.as_posix())
+
+        saved_model_path = Path(__file__).parent / self.config['training']['output_dir'] / 'model.pth'
+        model_trained = torch.load(saved_model_path, map_location=self.device)
+
+        model_trained.eval()
+
+        model_trained_weights = model_trained.state_dict()
+
+        for k in model_trained_weights:
+            self.assertTrue(torch.nonzero(model_trained_weights[k]))
+
+        os.remove(saved_model_path)
