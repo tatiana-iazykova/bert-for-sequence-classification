@@ -31,6 +31,6 @@ training:
   other_metrics:
     - micro
     - weighted
-  output_dir: response/
+  output_dir: bert_clf/tests/response/
   class_weight: false
   loss: NLLLoss
