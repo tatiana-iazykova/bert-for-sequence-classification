@@ -17,7 +17,7 @@ class TestDocParser(TestCase):
     device = "cpu"
 
     model = torch.load(
-        "results/model.pth", map_location=device
+        Path(__file__).parent / "results/model.pth", map_location=device
     )
 
     model.eval()
