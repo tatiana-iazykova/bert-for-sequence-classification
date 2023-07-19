@@ -31,6 +31,6 @@ training:
   other_metrics:
     - micro
     - weighted
-  output_dir: /home/runner/work/bert-for-sequence-classification/bert-for-sequence-classification/bert_clf/tests/bert_clf/tests/response/
+  output_dir: response/
   class_weight: false
   loss: NLLLoss
