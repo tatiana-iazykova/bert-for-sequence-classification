@@ -21,6 +21,12 @@ class TestDocParser(TestCase):
     )
 
     model.eval()
+
+    model_encoder = torch.load(
+        "results/model_encoder.pth", map_location=device
+    )
+    model_encoder.eval()
+
     config = load_config("base_case_config.yaml")
 
     @parameterized.expand([
@@ -110,6 +116,25 @@ class TestDocParser(TestCase):
         train("base_case_config.yaml")
 
         model_weights = self.model.state_dict()
+
+        model_trained = torch.load(
+            os.path.join(self.config['training']['output_dir'], 'model.pth'), map_location=self.device
+        )
+
+        model_trained.eval()
+
+        model_trained_weights = model_trained.state_dict()
+
+        for k in model_weights:
+            self.assertTrue(torch.allclose(model_weights[k], model_trained_weights[k]))
+
+        os.remove(os.path.join(self.config['training']['output_dir'], 'model.pth'))
+
+
+    def test_model_encoder(self):
+        train("encoder_case_config.yaml")
+
+        model_weights = self.model_encoder.state_dict()
 
         model_trained = torch.load(
             os.path.join(self.config['training']['output_dir'], 'model.pth'), map_location=self.device

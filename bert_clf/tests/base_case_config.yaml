@@ -8,6 +8,7 @@ transformer_model:
   batch_size: 8
   shuffle: true
   maxlen: 512
+  encoder: false
 
 # data
 data:

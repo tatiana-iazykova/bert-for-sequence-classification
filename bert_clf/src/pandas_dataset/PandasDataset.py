@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from bert_clf.src.pandas_dataset.BaseDataset import BaseDataset
+from bert_clf.src.core.BaseDataset import BaseDataset
 
 
 class PandasDataset(BaseDataset):

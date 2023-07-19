@@ -1,6 +1,7 @@
 import torch
 from sklearn.metrics import classification_report
-from bert_clf.src.BertCLF import BertCLF
+
+from bert_clf.src.core import BaseCLF
 from bert_clf.src.early_stopping import EarlyStopping
 import numpy as np
 from sklearn.metrics import f1_score
@@ -9,7 +10,7 @@ from typing import Dict, Any, Optional, Union, List, Tuple
 
 
 def predict_metrics(
-        model: BertCLF,
+        model: BaseCLF,
         iterator: torch.utils.data.DataLoader,
 ):
 
@@ -24,7 +25,7 @@ def predict_metrics(
     model.eval()
     with torch.no_grad():
         for texts, ys in tqdm(iterator, total=len(iterator), desc="Computing final metrics..."):
-            predictions = model(texts.to(model.device)).squeeze()
+            predictions = model(texts.to(model.pretrained_model.device)).squeeze()
             preds = predictions.detach().to('cpu').numpy().argmax(1).tolist()
             y_true = ys.tolist()
             true.extend(y_true)
@@ -37,19 +38,20 @@ def predict_metrics(
 
 
 def train(
-        model: BertCLF,
+        model: BaseCLF,
         iterator: torch.utils.data.DataLoader,
         optimizer: torch.optim,
         criterion: torch.nn,
         average: str = 'macro',
         other_metrics: Optional[Union[str, List[str]]] = None
-) -> Tuple[float, Optional[Dict[str, float]]]:
+) -> Tuple[np.ndarray, Optional[Dict[str, float]]]:
     """
     :param model: model architecture that you want to fine-tune
     :param iterator: iterator with data reserved for bert_clf
     :param optimizer: torch optimizer
     :param criterion: instance of torch-like loses
     :param average: type of averaging for f1 sklearn metric. Possible types are: 'micro', 'macro', 'weighted'
+    :param other_metrics: other metrics of your choice
     :return: mean metric for the bert_clf loop
     """
 
@@ -71,8 +73,8 @@ def train(
     for texts, ys in tqdm(iterator, total=len(iterator), desc='Training loop'):
 
         optimizer.zero_grad()
-        predictions = model(texts.to(model.device))
-        loss = criterion(predictions, ys.to(model.device))
+        predictions = model(texts.to(model.pretrained_model.device))
+        loss = criterion(predictions, ys.to(model.pretrained_model.device))
 
         loss.backward()
         optimizer.step()
@@ -92,7 +94,7 @@ def train(
 
 
 def evaluate(
-        model: BertCLF,
+        model: BaseCLF,
         iterator: torch.utils.data.DataLoader,
         criterion: torch.nn,
         average: str = 'macro',
@@ -103,7 +105,7 @@ def evaluate(
     :param iterator: instance of torch.utils.data.DataLoader
     :param criterion: instance of torch-like loses
     :param average: type of averaging for f1 sklearn metric. Possible types are: 'micro', 'macro', 'weighted'
-    :param other_metrics: other metrics you would like to track. NOTE: they wouldn't affect the training provess
+    :param other_metrics: other metrics you would like to track. NOTE: they wouldn't affect the training process
     :return: mean metric for the evaluating loop
     """
 
@@ -133,8 +135,8 @@ def evaluate(
     model.eval()
     with torch.no_grad():
         for texts, ys in tqdm(iterator, total=len(iterator), desc='Evaluating loop'):
-            predictions = model(texts.to(model.device))
-            loss = criterion(predictions, ys.to(model.device))
+            predictions = model(texts.to(model.pretrained_model.device))
+            loss = criterion(predictions, ys.to(model.pretrained_model.device))
             preds = predictions.detach().to('cpu').numpy().argmax(1).tolist()
             y_true = ys.tolist()
 
@@ -152,7 +154,7 @@ def evaluate(
 
 
 def train_evaluate(
-        model: BertCLF,
+        model: BaseCLF,
         training_generator: torch.utils.data.DataLoader,
         valid_generator: torch.utils.data.DataLoader,
         criterion: torch.optim,

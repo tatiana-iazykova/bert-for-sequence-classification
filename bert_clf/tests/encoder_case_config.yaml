@@ -1,0 +1,36 @@
+#model
+transformer_model:
+  model: "bigscience/mt0-small"
+  path_to_state_dict: false
+  device: cpu
+  dropout: 0.2
+  learning_rate: 1e-6
+  batch_size: 8
+  shuffle: true
+  maxlen: 512
+  encoder: true
+
+# data
+data:
+  train_data_path: "data/train.csv"
+  test_data_path: "data/test.csv"
+  text_column: "text"
+  target_column: "target"
+  random_state: 42
+  test_size: 0.5
+  stratify:
+
+# training
+training:
+  save_state_dict: false
+  early_stopping: true
+  delta: 0.001
+  patience: 1
+  num_epochs: 3
+  average_f1: macro
+  other_metrics:
+    - micro
+    - weighted
+  output_dir: response/
+  class_weight: false
+  loss: NLLLoss
