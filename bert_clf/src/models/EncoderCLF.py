@@ -2,9 +2,10 @@ import json
 import os
 from typing import Dict, Optional
 
+import requests
 import torch
 import torch.nn as nn
-import wget
+from tqdm.auto import tqdm
 from transformers import AutoModel, AutoConfig
 
 from bert_clf.src.core import BaseCLF
@@ -44,25 +45,24 @@ class EncoderCLF(BaseCLF):
 
             out = self.pretrained_model.config.d_model
 
-            wget.download(
+            id2label_path = "~/.cache/huggingface/language_identification_id2label.json"
+            state_dict_path = "~/.cache/huggingface/language_identification_state_dict.pth"
+
+            self.download(
                 url=SUPPORTED_MODELS[pretrained_model_name]['id2label'],
-                out="~/.cache/huggingface/language_identification_id2label.json",
+                name=id2label_path
             )
-            with open("~/.cache/huggingface/language_identification_id2label.json") as f:
+
+            with open(id2label_path) as f:
                 self.mapper = json.load(f)
                 self.mapper = {int(k): v for k, v in self.mapper.items()}
             self.fc = nn.Linear(out, len(self.mapper))
 
-            wget.download(
+            self.download(
                 url=SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
-                out="~/.cache/huggingface/language_identification_state_dict.pth"
+                name=state_dict_path
             )
-
-            self.load_state_dict(
-                torch.load(
-                    os.path.join("~/.cache/huggingface/language_identification_state_dict.pth"), map_location='cpu'
-                )
-            )
+            self.load_state_dict(torch.load(state_dict_path, map_location='cpu'))
 
         else:
             self.mapper = id2label
@@ -82,3 +82,14 @@ class EncoderCLF(BaseCLF):
         outputs = self.act(dense_outputs)
 
         return outputs
+
+    @staticmethod
+    def download(url, name):
+        save_path = os.path.expanduser(name)
+        downloaded_file = requests.get(
+            url=url,
+            stream=True
+        )
+        with open(save_path, "wb") as f:
+            for data in tqdm(downloaded_file.iter_content()):
+                f.write(data)
