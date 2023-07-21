@@ -69,7 +69,7 @@ def get_mapper_and_separated_data(
     :return: mapper and separated texts and labels
     """
 
-    id2label = {i: l for i, l in enumerate(df.train[config['data']['target_column']].unique())}
+    id2label = {i: l for i, l in enumerate(df.train[config['data']['target_column']].unique().tolist())}
     label2id = {l: i for i, l in id2label.items()}
     train_texts = df.train[config['data']['text_column']].to_list()
     valid_texts = df.test[config['data']['text_column']].to_list()

@@ -4,6 +4,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import coverage
+
 
 def test_suite(tests_root_dir: Path):
     loader = unittest.TestLoader()
@@ -16,6 +18,8 @@ def test_suite(tests_root_dir: Path):
 
 
 if __name__ == '__main__':
+    cov = coverage.Coverage(omit='*/venv*/,example/,*/.github/')
+    cov.start()
     if sys.platform.startswith('darwin'):
         try:
             multiprocessing.set_start_method("spawn")
@@ -29,3 +33,5 @@ if __name__ == '__main__':
 
     runner = unittest.TextTestRunner()
     runner.run(test_suite(tests_root_dir))
+
+    cov.report()

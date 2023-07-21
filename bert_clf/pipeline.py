@@ -1,4 +1,3 @@
-import json
 import os
 
 import numpy as np
@@ -81,23 +80,7 @@ def train(path_to_config: str):
         config=config
     )
 
-    if config['training']['save_state_dict']:
-        torch.save(
-            model.state_dict(),
-            os.path.join(config["training"]["output_dir"], "model.pth"),
-        )
-
-        with open(
-                os.path.join(config["training"]["output_dir"], 'label_mapper.json'),
-                mode='w',
-                encoding='utf-8'
-        ) as f:
-            json.dump(model.mapper, f, indent=4, ensure_ascii=False)
-    else:
-        torch.save(
-            model,
-            os.path.join(config["training"]["output_dir"], "model.pth"),
-        )
+    model.save_pretrained(path=config['training']['output_dir'])
 
 
 def main():

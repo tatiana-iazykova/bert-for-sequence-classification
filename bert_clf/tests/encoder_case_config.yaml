@@ -22,7 +22,6 @@ data:
 
 # training
 training:
-  save_state_dict: false
   early_stopping: true
   delta: 0.001
   patience: 1
@@ -31,6 +30,6 @@ training:
   other_metrics:
     - micro
     - weighted
-  output_dir: response/
+  output_dir: response/tmp/
   class_weight: false
   loss: NLLLoss
