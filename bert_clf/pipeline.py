@@ -5,9 +5,6 @@ import torch
 import torch.optim as optim
 from sklearn.utils.class_weight import compute_class_weight
 
-import sys
-sys.path.append("./")
-
 from bert_clf import train_evaluate, prepare_data, prepare_dataset
 from bert_clf.src.core import CLFFabric
 from bert_clf.utils import load_config, get_argparse, set_global_seed, str_to_class
