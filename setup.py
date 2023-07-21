@@ -20,7 +20,8 @@ setup(
         'scikit-learn>=1.0',
         'pyyaml>=6.0',
         'openpyxl>=3.0.9',
-        "wget"
+        'tqdm',
+        'requests'
     ],
 
     keywords=['python', 'bert', 'deep learning', 'nlp'],

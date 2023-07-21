@@ -5,4 +5,5 @@ pandas==1.1.5
 scikit-learn==1.0
 pyyaml==6.0
 openpyxl==3.0.9
-wget
+tqdm
+requests

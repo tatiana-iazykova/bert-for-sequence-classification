@@ -45,8 +45,8 @@ class EncoderCLF(BaseCLF):
 
             out = self.pretrained_model.config.d_model
 
-            id2label_path = "~/.cache/huggingface/language_identification_id2label.json"
-            state_dict_path = "~/.cache/huggingface/language_identification_state_dict.pth"
+            id2label_path = os.path.expanduser("~/.cache/huggingface/language_identification_id2label.json")
+            state_dict_path = os.path.expanduser("~/.cache/huggingface/language_identification_state_dict.pth")
 
             self.download(
                 url=SUPPORTED_MODELS[pretrained_model_name]['id2label'],
@@ -85,11 +85,10 @@ class EncoderCLF(BaseCLF):
 
     @staticmethod
     def download(url, name):
-        save_path = os.path.expanduser(name)
         downloaded_file = requests.get(
             url=url,
             stream=True
         )
-        with open(save_path, "wb") as f:
+        with open(name, "wb") as f:
             for data in tqdm(downloaded_file.iter_content()):
                 f.write(data)
