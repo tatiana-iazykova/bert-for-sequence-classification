@@ -2,8 +2,10 @@ import json
 import os
 from typing import Dict, Optional
 
+import requests
 import torch
 import torch.nn as nn
+from tqdm.auto import tqdm
 from transformers import AutoTokenizer
 from abc import abstractmethod
 

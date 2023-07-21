@@ -2,10 +2,9 @@ import json
 import os
 from typing import Dict, Optional
 
-import requests
 import torch
 import torch.nn as nn
-from tqdm.auto import tqdm
+import wget
 from transformers import AutoModel, AutoConfig
 
 from bert_clf.src.core import BaseCLF
@@ -48,9 +47,9 @@ class EncoderCLF(BaseCLF):
             id2label_path = os.path.expanduser("~/.cache/huggingface/language_identification_id2label.json")
             state_dict_path = os.path.expanduser("~/.cache/huggingface/language_identification_state_dict.pth")
 
-            self.download(
-                url=SUPPORTED_MODELS[pretrained_model_name]['id2label'],
-                name=id2label_path
+            wget.download(
+                SUPPORTED_MODELS[pretrained_model_name]['id2label'],
+                id2label_path
             )
 
             with open(id2label_path) as f:
@@ -58,10 +57,11 @@ class EncoderCLF(BaseCLF):
                 self.mapper = {int(k): v for k, v in self.mapper.items()}
             self.fc = nn.Linear(out, len(self.mapper))
 
-            self.download(
-                url=SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
-                name=state_dict_path
+            wget.download(
+                SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
+                state_dict_path
             )
+
             self.load_state_dict(torch.load(state_dict_path, map_location='cpu'))
 
         else:
@@ -82,13 +82,3 @@ class EncoderCLF(BaseCLF):
         outputs = self.act(dense_outputs)
 
         return outputs
-
-    @staticmethod
-    def download(url, name):
-        downloaded_file = requests.get(
-            url=url,
-            stream=True
-        )
-        with open(name, "wb") as f:
-            for data in tqdm(downloaded_file.iter_content()):
-                f.write(data)
