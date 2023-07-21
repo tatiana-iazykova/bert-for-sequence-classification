@@ -44,7 +44,11 @@ class EncoderCLF(BaseCLF):
 
             out = self.pretrained_model.config.d_model
 
-            with open(SUPPORTED_MODELS[pretrained_model_name]['id2label']) as f:
+            urllib.request.urlretrieve(
+                SUPPORTED_MODELS[pretrained_model_name]['id2label'],
+                "~/.cache/huggingface/language_identification_id2label.json"
+            )
+            with open("~/.cache/huggingface/language_identification_id2label.json") as f:
                 self.mapper = json.load(f)
                 self.mapper = {int(k): v for k, v in self.mapper.items()}
             self.fc = nn.Linear(out, len(self.mapper))
