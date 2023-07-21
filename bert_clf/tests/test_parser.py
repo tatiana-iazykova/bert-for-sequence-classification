@@ -1,13 +1,14 @@
+import shutil
+
 from bert_clf.pipeline import train
 from bert_clf.utils import load_config
-from bert_clf import prepare_data, prepare_data_notebook
+from bert_clf import prepare_data, prepare_data_notebook, EncoderCLF, BertCLF
 from unittest import TestCase
 from pathlib import Path
 import torch
 from parameterized import parameterized
 import pandas as pd
 import json
-import os
 
 
 class TestDocParser(TestCase):
@@ -16,9 +17,8 @@ class TestDocParser(TestCase):
 
     device = "cpu"
 
-    model = torch.load(
-        Path(__file__).parent / "results/model.pth", map_location=device
-    )
+    model_path = Path(__file__).parent / "results"
+    model = BertCLF(model_path.as_posix())
 
     model.eval()
     config_path = Path(__file__).parent / "base_case_config.yaml"
@@ -112,8 +112,8 @@ class TestDocParser(TestCase):
 
         model_weights = self.model.state_dict()
 
-        saved_model_path = self.config['training']['output_dir'] + 'model.pth'
-        model_trained = torch.load(saved_model_path, map_location=self.device)
+        config = load_config("base_case_config.yaml")
+        model_trained = BertCLF(config['training']['output_dir'])
 
         model_trained.eval()
 
@@ -122,13 +122,13 @@ class TestDocParser(TestCase):
         for k in model_weights:
             self.assertTrue(torch.allclose(model_weights[k], model_trained_weights[k]))
 
-        os.remove(saved_model_path)
+        shutil.rmtree(config['training']['output_dir'])
 
     def test_model_encoder(self):
         train("encoder_case_config.yaml")
 
-        saved_model_path = self.config['training']['output_dir'] + 'model.pth'
-        model_trained = torch.load(saved_model_path, map_location=self.device)
+        config = load_config("encoder_case_config.yaml")
+        model_trained = EncoderCLF(config['training']['output_dir'])
 
         model_trained.eval()
 
@@ -136,4 +136,4 @@ class TestDocParser(TestCase):
 
         for k in model_trained_weights:
             self.assertTrue(not torch.all(model_trained_weights[k].eq(torch.rand(model_trained_weights[k].shape))))
-        os.remove(saved_model_path)
+        shutil.rmtree(config['training']['output_dir'])

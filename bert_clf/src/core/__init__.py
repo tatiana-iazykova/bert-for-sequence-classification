@@ -1,6 +1,6 @@
 from .BaseModel import BaseCLF
 from .BaseDataset import BaseDataset
-from .CLFFabric import CLFFabric
+from .Fabric import CLFFabric
 
 
 __all__ = [
