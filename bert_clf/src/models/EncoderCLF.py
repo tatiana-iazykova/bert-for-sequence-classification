@@ -1,10 +1,10 @@
 import json
 import os
-import urllib.request
 from typing import Dict, Optional
 
 import torch
 import torch.nn as nn
+import wget
 from transformers import AutoModel, AutoConfig
 
 from bert_clf.src.core import BaseCLF
@@ -44,18 +44,18 @@ class EncoderCLF(BaseCLF):
 
             out = self.pretrained_model.config.d_model
 
-            urllib.request.urlretrieve(
-                SUPPORTED_MODELS[pretrained_model_name]['id2label'],
-                "~/.cache/huggingface/language_identification_id2label.json"
+            wget.download(
+                url=SUPPORTED_MODELS[pretrained_model_name]['id2label'],
+                out="~/.cache/huggingface/language_identification_id2label.json",
             )
             with open("~/.cache/huggingface/language_identification_id2label.json") as f:
                 self.mapper = json.load(f)
                 self.mapper = {int(k): v for k, v in self.mapper.items()}
             self.fc = nn.Linear(out, len(self.mapper))
 
-            urllib.request.urlretrieve(
-                SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
-                "~/.cache/huggingface/language_identification_state_dict.pth"
+            wget.download(
+                url=SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
+                out="~/.cache/huggingface/language_identification_state_dict.pth"
             )
 
             self.load_state_dict(
