@@ -4,9 +4,11 @@ from typing import Dict, Optional
 
 import torch
 import torch.nn as nn
+import wget
 from transformers import AutoModel, AutoConfig
 
 from bert_clf.src.core import BaseCLF
+from bert_clf.src.core.utils import SUPPORTED_MODELS
 
 
 class EncoderCLF(BaseCLF):
@@ -34,6 +36,33 @@ class EncoderCLF(BaseCLF):
                     os.path.join(pretrained_model_name, "state_dict.pth"), map_location='cpu'
                 )
             )
+
+        elif pretrained_model_name in SUPPORTED_MODELS:
+            self.pretrained_model = AutoModel.from_config(
+                AutoConfig.from_pretrained(self.tokenizer.name_or_path)
+            ).encoder
+
+            out = self.pretrained_model.config.d_model
+
+            id2label_path = os.path.expanduser("~/.cache/huggingface/language_identification_id2label.json")
+            state_dict_path = os.path.expanduser("~/.cache/huggingface/language_identification_state_dict.pth")
+
+            wget.download(
+                SUPPORTED_MODELS[pretrained_model_name]['id2label'],
+                id2label_path
+            )
+
+            with open(id2label_path) as f:
+                self.mapper = json.load(f)
+                self.mapper = {int(k): v for k, v in self.mapper.items()}
+            self.fc = nn.Linear(out, len(self.mapper))
+
+            wget.download(
+                SUPPORTED_MODELS[pretrained_model_name]['state_dict'],
+                state_dict_path
+            )
+
+            self.load_state_dict(torch.load(state_dict_path, map_location='cpu'))
 
         else:
             self.mapper = id2label
