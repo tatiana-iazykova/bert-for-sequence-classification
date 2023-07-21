@@ -5,3 +5,4 @@ training/__pycache__/
 example/.ipynb_checkpoints/
 dist/
 bert_for_sequence_classification.egg-info/
+.pytest_cache/
